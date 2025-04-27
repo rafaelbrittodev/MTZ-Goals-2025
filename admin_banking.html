@@ -1,0 +1,238 @@
+<!doctype html>
+<html class="no-js" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link
+        href="https://fonts.googleapis.com/css?family=Poppins:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+
+    <title>MTZ Bank - Admin</title>
+
+    <link rel="shortcut icon" type="image/icon" href="assets/logo/logo_preto.png" />
+
+    <link rel="stylesheet" href="assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+
+    <script src="assets/js/globalVariables.js"></script>
+
+    <style>
+        .note-counts-container {
+            background-color: #e9ecef;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: left;
+            border: 1px solid #ced4da;
+        }
+
+        .note-counts-container h3 {
+            color: #495057;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .note-counts-container p {
+            color: #6c757d;
+            margin-bottom: 5px;
+            font-size: 1em;
+        }
+    </style>
+</head>
+
+<body>
+    <header id="header-top" class="header-top">
+    </header>
+
+    <section id="home" class="welcome-hero">
+        <div class="container">
+            <div class="welcome-hero-txt">
+                <h2>Painel de Administração MTZ Bank</h2>
+                <p>Gerencie os depósitos no caixa eletrônico.</p>
+                <p><br></p>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="subscription-input-group">
+                        <form id="depositForm">
+                            <div class="input-fields">
+                                <h3 style="color: white;">Depositar Notas</h3>
+                                <h4><br></h4>
+                                <div class="form-group">
+                                    <label for="note2">Notas de R$ 2:</label>
+                                    <input type="number" id="note2" class="subscription-input-form" value="0" min="0">
+                                </div>
+                                <div class="form-group">
+                                    <label for="note5">Notas de R$ 5:</label>
+                                    <input type="number" id="note5" class="subscription-input-form" value="0" min="0">
+                                </div>
+                                <div class="form-group">
+                                    <label for="note10">Notas de R$ 10:</label>
+                                    <input type="number" id="note10" class="subscription-input-form" value="0" min="0">
+                                </div>
+                                <div class="form-group">
+                                    <label for="note20">Notas de R$ 20:</label>
+                                    <input type="number" id="note20" class="subscription-input-form" value="0" min="0">
+                                </div>
+                                <div class="form-group">
+                                    <label for="note50">Notas de R$ 50:</label>
+                                    <input type="number" id="note50" class="subscription-input-form" value="0" min="0">
+                                </div>
+                                <div class="form-group">
+                                    <label for="note100">Notas de R$ 100:</label>
+                                    <input type="number" id="note100" class="subscription-input-form" value="0" min="0">
+                                </div>
+                                <div class="form-group">
+                                    <label for="note200">Notas de R$ 200:</label>
+                                    <input type="number" id="note200" class="subscription-input-form" value="0" min="0">
+                                </div>
+                                <p><br></p>
+                                <button type="submit"
+                                    style="background-color: #5cb85c; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">
+                                    <i class="fa fa-upload"></i> Depositar
+                                </button>
+                                <div><br></div>
+                            </div>
+                        </form>
+                        <div id="depositSummary" style="margin-top: 20px; display: none;">
+                            <h3>Resumo do Depósito</h3>
+                            <p id="summaryText"></p>
+                        </div>
+                        <div id="noteCounts" class="note-counts-container">
+                            <h3>Notas Disponíveis</h3>
+                            <p id="countsText"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer id="footer" class="footer">
+        <div class="container">
+            <div class="footer-menu">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <div class="navbar-header">
+                            <a class="navbar-brand" href="index.html">MTZ<span>Bank</span></a>
+                        </div>
+                    </div>
+                    <div class="col-sm-9">
+                        <ul class="footer-menu-item">
+                            <li class=""><a href="index.html" id="logoutBtn">Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="hm-footer-copyright">
+                <div class="row">
+                    <div class="col-sm-5">
+                        <p>&copy; Metas do Brito. No copyright.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { caixaEletronico as caixaEletronicoInicial } from './assets/js/database.js';
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const depositForm = document.getElementById('depositForm');
+            const note2Input = document.getElementById('note2');
+            const note5Input = document.getElementById('note5');
+            const note10Input = document.getElementById('note10');
+            const note20Input = document.getElementById('note20');
+            const note50Input = document.getElementById('note50');
+            const note100Input = document.getElementById('note100');
+            const note200Input = document.getElementById('note200');
+            const depositSummary = document.getElementById('depositSummary');
+            const summaryText = document.getElementById('summaryText');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const countsText = document.getElementById('countsText');
+
+            // Try para carregar o estado do caixa do localStorage ao carregar a página
+            try {
+                const storedCaixa = localStorage.getItem('caixaEletronico');
+                if (storedCaixa) {
+                    window.caixaEletronico = JSON.parse(storedCaixa);
+                    console.log('Dados do caixa carregados do localStorage (admin):', window.caixaEletronico);
+                } else {
+                    window.caixaEletronico = caixaEletronicoInicial;
+                    console.log('Nenhum dado encontrado no localStorage (admin), usando estado inicial.');
+                }
+            } catch (error) {
+                console.error('Erro ao carregar dados do localStorage (admin):', error);
+                window.caixaEletronico = caixaEletronicoInicial;
+            }
+
+            function atualizarContagemNotas() {
+                countsText.innerHTML = `
+                    Notas de R$ 2: ${window.caixaEletronico.notas2}<br>
+                    Notas de R$ 5: ${window.caixaEletronico.notas5}<br>
+                    Notas de R$ 10: ${window.caixaEletronico.notas10}<br>
+                    Notas de R$ 20: ${window.caixaEletronico.notas20}<br>
+                    Notas de R$ 50: ${window.caixaEletronico.notas50}<br>
+                    Notas de R$ 100: ${window.caixaEletronico.notas100}<br>
+                    Notas de R$ 200: ${window.caixaEletronico.notas200}
+                `;
+            }
+
+            atualizarContagemNotas();
+
+            depositForm.addEventListener('submit', function (event) {
+                event.preventDefault();
+
+                const note2 = parseInt(note2Input.value);
+                const note5 = parseInt(note5Input.value);
+                const note10 = parseInt(note10Input.value);
+                const note20 = parseInt(note20Input.value);
+                const note50 = parseInt(note50Input.value);
+                const note100 = parseInt(note100Input.value);
+                const note200 = parseInt(note200Input.value);
+
+                window.caixaEletronico.notas2 += note2;
+                window.caixaEletronico.notas5 += note5;
+                window.caixaEletronico.notas10 += note10;
+                window.caixaEletronico.notas20 += note20;
+                window.caixaEletronico.notas50 += note50;
+                window.caixaEletronico.notas100 += note100;
+                window.caixaEletronico.notas200 += note200;
+
+                const totalDeposit = (note2 * 2) + (note5 * 5) + (note10 * 10) + (note20 * 20) + (note50 * 50) + (note100 * 100) + (note200 * 200);
+
+                summaryText.innerHTML = `Você depositou:<br>
+                    ${note2} notas de R$ 2,<br>
+                    ${note5} notas de R$ 5,<br>
+                    ${note10} notas de R$ 10,<br>
+                    ${note20} notas de R$ 20,<br>
+                    ${note50} notas de R$ 50,<br>
+                    ${note100} notas de R$ 100,<br>
+                    ${note200} notas de R$ 200.<br>
+                    Totalizando: R$ ${totalDeposit.toFixed(2)}.`;
+                depositSummary.style.display = 'block';
+
+                console.log('Estado atual do caixa (admin):', window.caixaEletronico);
+                atualizarContagemNotas();
+
+                salvarCaixa();
+            });
+
+            logoutBtn.addEventListener('click', function (event) {
+                event.preventDefault();
+                window.location.href = 'index.html';
+            });
+        });
+
+        function salvarCaixa() {
+            localStorage.setItem('caixaEletronico', JSON.stringify(window.caixaEletronico));
+        }
+    </script>
+</body>
+
+</html>
