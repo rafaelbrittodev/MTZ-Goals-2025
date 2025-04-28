@@ -1,4 +1,3 @@
-// assets/js/globalVariables.js
 window.caixaEletronico = {
     notas2: 0,
     notas5: 0,
