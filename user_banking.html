@@ -91,6 +91,7 @@
     </footer>
 
     <script type="module">
+        // Importa o estado inicial caixaEletronico do database.js
         import { caixaEletronico as caixaEletronicoInicial } from './assets/js/database.js';
 
         document.addEventListener('DOMContentLoaded', function () {
@@ -101,11 +102,11 @@
             const countsText = document.getElementById('countsText');
             const saldoDisponivelElement = document.getElementById('saldoDisponivel');
 
-            // Saldo inicial (pode ser carregado de alguma forma, aqui está fixo para exemplo)
+            // Set o saldo inicial disponível, mas não persiste esse valor via localStorage
             window.saldoDisponivel = 10000;
             atualizarSaldoDisplay();
 
-            // Try para carregar o estado do caixa do localStorage ao carregar a página
+            // Try para tentar carregar o estado do caixa do localStorage
             try {
                 const storedCaixa = localStorage.getItem('caixaEletronico');
                 if (storedCaixa) {
@@ -139,6 +140,7 @@
             atualizarSaldoDisplay();
             atualizarContagemNotas();
 
+            // Listener para o envio do form de saque
             withdrawForm.addEventListener('submit', function (event) {
                 event.preventDefault();
                 const withdrawAmount = parseFloat(withdrawAmountInput.value);
@@ -183,9 +185,10 @@
                     atualizarContagemNotas();
                     salvarCaixa();
 
+                    // DL de callback implementado nesta página pq tive problemas de execução ao tentar implementar via dataLayer.js
                     const pageTitle = document.title;
                     window.dataLayer.push({
-                        'event': 'clique',
+                        'event': 'callback',
                         'custom_section': sanitize(pageTitle),
                         'custom_type': 'saque',
                         'custom_title': 'sucesso',
@@ -198,6 +201,8 @@
                 }
             });
 
+            // Listener para o evento de 'click' do elemento <a> para fazer funcionar como botão de logout
+            // não mudei este elemento para um <button> pois queria manter sua estética herdada do arquivo template
             logoutBtn.addEventListener('click', function (event) {
                 event.preventDefault();
                 window.location.href = 'index.html';
@@ -239,6 +244,9 @@
             return valorRestante === 0 ? notasSacadas : null;
         }
 
+        // Mantive outra function sanitize aqui apesar da mesma existir no arquivo sanitize.js
+        // mesmo realizando o import correto e o uso dela, por algum motivo o dataLayer de callback
+        // quebra o disparo, mas dessa forma funcionou então mantive assim e removi o import do sanitize.js dessa página
         function sanitize(string) {
             try {
                 if (typeof string !== 'string') {

@@ -7,5 +7,3 @@ window.caixaEletronico = {
   notas100: 0,
   notas200: 0,
 };
-
-window.saldoDisponivel = 10000;

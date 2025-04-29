@@ -120,6 +120,7 @@
     </footer>
 
     <script type="module">
+        // Importa o estado inicial caixaEletronico do database.js
         import { caixaEletronico as caixaEletronicoInicial } from './assets/js/database.js';
 
         document.addEventListener('DOMContentLoaded', function () {
@@ -136,7 +137,7 @@
             const logoutBtn = document.getElementById('logoutBtn');
             const countsText = document.getElementById('countsText');
 
-            // Try para carregar o estado do caixa do localStorage ao carregar a página
+            // Try para tentar carregar o estado do caixa do localStorage
             try {
                 const storedCaixa = localStorage.getItem('caixaEletronico');
                 if (storedCaixa) {
@@ -165,7 +166,9 @@
 
             atualizarContagemNotas();
 
+            // Listener para o evento de envio do form de depósito.
             depositForm.addEventListener('submit', function (event) {
+                // Impedindo o comportamento padrão do form para evitar o recarregamento da página
                 event.preventDefault();
 
                 const note2 = parseInt(note2Input.value);
@@ -186,6 +189,7 @@
 
                 const totalDeposit = (note2 * 2) + (note5 * 5) + (note10 * 10) + (note20 * 20) + (note50 * 50) + (note100 * 100) + (note200 * 200);
 
+                // Atualização da view para exibir um resumo do depósito
                 summaryText.innerHTML = `Você depositou:<br>
                     ${note2} notas de R$ 2,<br>
                     ${note5} notas de R$ 5,<br>
@@ -201,6 +205,7 @@
                 atualizarContagemNotas();
                 salvarCaixa();
 
+                // DL de callback implementado nesta página pq tive problemas de execução ao tentar implementar via dataLayer.js
                 const pageTitle = document.title;
                 window.dataLayer.push({
                     'event': 'callback',
@@ -210,6 +215,8 @@
                 });
             });
 
+            // Listener para o evento de 'click' do elemento <a> para fazer funcionar como botão de logout
+            // não mudei este elemento para um <button> pois queria manter sua estética herdada do arquivo template
             logoutBtn.addEventListener('click', function (event) {
                 event.preventDefault();
                 window.location.href = 'index.html';
@@ -219,6 +226,9 @@
                 localStorage.setItem('caixaEletronico', JSON.stringify(window.caixaEletronico));
             }
 
+            // Mantive outra function sanitize aqui apesar da mesma existir no arquivo sanitize.js
+            // mesmo realizando o import correto e o uso dela, por algum motivo o dataLayer de callback
+            // quebra o disparo, mas dessa forma funcionou então mantive assim e removi o import do sanitize.js dessa página
             function sanitize(string) {
                 try {
                     if (typeof string !== 'string') {
@@ -236,10 +246,6 @@
                 }
             }
         });
-
-        function salvarCaixa() {
-            localStorage.setItem('caixaEletronico', JSON.stringify(window.caixaEletronico));
-        }
     </script>
 </body>
 
