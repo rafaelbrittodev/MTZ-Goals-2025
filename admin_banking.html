@@ -9,7 +9,7 @@
         href="https://fonts.googleapis.com/css?family=Poppins:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
 
-    <title>MTZ Bank - Admin</title>
+    <title>MTZ Bank Admin</title>
 
     <link rel="shortcut icon" type="image/icon" href="assets/logo/logo_preto.png" />
 
@@ -19,29 +19,9 @@
     <link rel="stylesheet" href="assets/css/responsive.css">
 
     <script src="assets/js/globalVariables.js"></script>
-
+    <script src="assets/js/dataLayer.js"></script>
     <style>
-        .note-counts-container {
-            background-color: #e9ecef;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 20px;
-            text-align: left;
-            border: 1px solid #ced4da;
-        }
 
-        .note-counts-container h3 {
-            color: #495057;
-            margin-top: 0;
-            margin-bottom: 15px;
-            font-size: 1.5em;
-        }
-
-        .note-counts-container p {
-            color: #6c757d;
-            margin-bottom: 5px;
-            font-size: 1em;
-        }
     </style>
 </head>
 
@@ -219,14 +199,42 @@
 
                 console.log('Estado atual do caixa (admin):', window.caixaEletronico);
                 atualizarContagemNotas();
-
                 salvarCaixa();
+
+                const pageTitle = document.title;
+                window.dataLayer.push({
+                    'event': 'callback',
+                    'custom_section': sanitize(pageTitle),
+                    'custom_type': 'deposito',
+                    'custom_title': 'sucesso',
+                });
             });
 
             logoutBtn.addEventListener('click', function (event) {
                 event.preventDefault();
                 window.location.href = 'index.html';
             });
+
+            function salvarCaixa() {
+                localStorage.setItem('caixaEletronico', JSON.stringify(window.caixaEletronico));
+            }
+
+            function sanitize(string) {
+                try {
+                    if (typeof string !== 'string') {
+                        return '';
+                    }
+                    let sanitized = string.trim().toLowerCase();
+                    sanitized = sanitized
+                        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                        .replace(/[^a-z0-9\s-]/g, "")
+                        .replace(/\s+/g, "-")
+                        .replace(/-+/g, "-");
+                    return sanitized;
+                } catch (e) {
+                    return '';
+                }
+            }
         });
 
         function salvarCaixa() {

@@ -1,0 +1,261 @@
+<!doctype html>
+<html class="no-js" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link
+        href="https://fonts.googleapis.com/css?family=Poppins:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+
+    <title>MTZ Bank Usuário</title>
+
+    <link rel="shortcut icon" type="image/icon" href="assets/logo/logo_preto.png" />
+
+    <link rel="stylesheet" href="assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+
+    <script src="assets/js/globalVariables.js"></script>
+    <script src="assets/js/dataLayer.js"></script>
+</head>
+
+<body>
+    <header id="header-top" class="header-top">
+    </header>
+
+    <section id="home" class="welcome-hero">
+        <div class="container">
+            <div class="welcome-hero-txt">
+                <h2>Painel do Usuário MTZ Bank</h2>
+                <p>Realize saques de sua conta.</p>
+                <p>Saldo disponível: R$ <span id="saldoDisponivel"></span></p>
+                <p><br></p>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="subscription-input-group">
+                        <form id="withdrawForm">
+                            <div class="input-fields">
+                                <h3 style="color: white;">Sacar Dinheiro</h3>
+                                <h4><br></h4>
+                                <div class="form-group">
+                                    <label for="withdrawAmount">Valor do Saque (até R$ 5.000):</label>
+                                    <input type="number" id="withdrawAmount" class="subscription-input-form" value="0"
+                                        min="0">
+                                </div>
+                                <p><br></p>
+                                <button type="submit">
+                                    <i class="fa fa-arrow-down"></i> Sacar
+                                </button>
+                                <div><br></div>
+                            </div>
+                        </form>
+                        <div id="withdrawMessage" style="display: none;"></div>
+                        <div id="noteCounts" class="note-counts-container">
+                            <h3>Notas Disponíveis</h3>
+                            <p id="countsText"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer id="footer" class="footer">
+        <div class="container">
+            <div class="footer-menu">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <div class="navbar-header">
+                            <a class="navbar-brand" href="index.html">MTZ<span>Bank</span></a>
+                        </div>
+                    </div>
+                    <div class="col-sm-9">
+                        <ul class="footer-menu-item">
+                            <li class=""><a href="index.html" id="logoutBtn">Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="hm-footer-copyright">
+                <div class="row">
+                    <div class="col-sm-5">
+                        <p>&copy; Metas do Brito. No copyright.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { caixaEletronico as caixaEletronicoInicial } from './assets/js/database.js';
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const withdrawForm = document.getElementById('withdrawForm');
+            const withdrawAmountInput = document.getElementById('withdrawAmount');
+            const withdrawMessageDiv = document.getElementById('withdrawMessage');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const countsText = document.getElementById('countsText');
+            const saldoDisponivelElement = document.getElementById('saldoDisponivel');
+
+            // Saldo inicial (pode ser carregado de alguma forma, aqui está fixo para exemplo)
+            window.saldoDisponivel = 10000;
+            atualizarSaldoDisplay();
+
+            // Try para carregar o estado do caixa do localStorage ao carregar a página
+            try {
+                const storedCaixa = localStorage.getItem('caixaEletronico');
+                if (storedCaixa) {
+                    window.caixaEletronico = JSON.parse(storedCaixa);
+                    console.log('Dados do caixa carregados do localStorage (user):', window.caixaEletronico);
+                } else {
+                    window.caixaEletronico = caixaEletronicoInicial;
+                    console.log('Nenhum dado encontrado no localStorage (user), usando estado inicial.');
+                }
+            } catch (error) {
+                console.error('Erro ao carregar dados do localStorage (user):', error);
+                window.caixaEletronico = caixaEletronicoInicial;
+            }
+
+            function atualizarSaldoDisplay() {
+                saldoDisponivelElement.textContent = window.saldoDisponivel.toFixed(2);
+            }
+
+            function atualizarContagemNotas() {
+                countsText.innerHTML = `
+                    Notas de R$ 2: ${window.caixaEletronico.notas2}<br>
+                    Notas de R$ 5: ${window.caixaEletronico.notas5}<br>
+                    Notas de R$ 10: ${window.caixaEletronico.notas10}<br>
+                    Notas de R$ 20: ${window.caixaEletronico.notas20}<br>
+                    Notas de R$ 50: ${window.caixaEletronico.notas50}<br>
+                    Notas de R$ 100: ${window.caixaEletronico.notas100}<br>
+                    Notas de R$ 200: ${window.caixaEletronico.notas200}
+                `;
+            }
+
+            atualizarSaldoDisplay();
+            atualizarContagemNotas();
+
+            withdrawForm.addEventListener('submit', function (event) {
+                event.preventDefault();
+                const withdrawAmount = parseFloat(withdrawAmountInput.value);
+
+                if (withdrawAmount <= 0) {
+                    withdrawMessageDiv.textContent = 'Por favor, insira um valor válido para saque.';
+                    withdrawMessageDiv.className = 'error';
+                    withdrawMessageDiv.style.display = 'block';
+                    return;
+                }
+
+                if (withdrawAmount > 5000) {
+                    withdrawMessageDiv.textContent = 'Para saques acima de R$ 5.000, compareça ao balcão da agência.';
+                    withdrawMessageDiv.className = 'error';
+                    withdrawMessageDiv.style.display = 'block';
+                    return;
+                }
+
+                if (withdrawAmount > window.saldoDisponivel) {
+                    withdrawMessageDiv.textContent = 'Saldo insuficiente.';
+                    withdrawMessageDiv.className = 'error';
+                    withdrawMessageDiv.style.display = 'block';
+                    return;
+                }
+
+                const notasSacadas = sacarNotas(withdrawAmount);
+
+                if (notasSacadas) {
+                    window.saldoDisponivel -= withdrawAmount;
+                    salvarSaldo();
+                    let summaryText = 'Saque realizado com sucesso:<br>';
+                    for (const nota in notasSacadas) {
+                        if (notasSacadas[nota] > 0) {
+                            summaryText += `${notasSacadas[nota]} notas de R$ ${nota}<br>`;
+                        }
+                    }
+                    summaryText += `Totalizando: R$ ${withdrawAmount.toFixed(2)}.`;
+                    withdrawMessageDiv.innerHTML = summaryText;
+                    withdrawMessageDiv.className = 'success';
+                    withdrawMessageDiv.style.display = 'block';
+                    atualizarSaldoDisplay();
+                    atualizarContagemNotas();
+                    salvarCaixa();
+
+                    const pageTitle = document.title;
+                    window.dataLayer.push({
+                        'event': 'clique',
+                        'custom_section': sanitize(pageTitle),
+                        'custom_type': 'saque',
+                        'custom_title': 'sucesso',
+                    });
+
+                } else {
+                    withdrawMessageDiv.textContent = 'Não foi possível realizar o saque com as notas disponíveis.';
+                    withdrawMessageDiv.className = 'error';
+                    withdrawMessageDiv.style.display = 'block';
+                }
+            });
+
+            logoutBtn.addEventListener('click', function (event) {
+                event.preventDefault();
+                window.location.href = 'index.html';
+            });
+        });
+
+        function salvarCaixa() {
+            localStorage.setItem('caixaEletronico', JSON.stringify(window.caixaEletronico));
+        }
+
+        function salvarSaldo() {
+            localStorage.setItem('saldoDisponivel', window.saldoDisponivel.toString());
+        }
+
+        function sacarNotas(valor) {
+            const notasDisponiveis = [200, 100, 50, 20, 10, 5, 2];
+            const contagemNotas = {
+                200: window.caixaEletronico.notas200,
+                100: window.caixaEletronico.notas100,
+                50: window.caixaEletronico.notas50,
+                20: window.caixaEletronico.notas20,
+                10: window.caixaEletronico.notas10,
+                5: window.caixaEletronico.notas5,
+                2: window.caixaEletronico.notas2
+            };
+            const notasSacadas = {};
+            let valorRestante = valor;
+
+            for (const valorNota of notasDisponiveis) {
+                const quantidadeNotasSacar = Math.min(Math.floor(valorRestante / valorNota), contagemNotas[valorNota]);
+
+                if (quantidadeNotasSacar > 0) {
+                    notasSacadas[valorNota] = quantidadeNotasSacar;
+                    window.caixaEletronico[`notas${valorNota}`] -= quantidadeNotasSacar;
+                    valorRestante -= quantidadeNotasSacar * valorNota;
+                }
+            }
+
+            return valorRestante === 0 ? notasSacadas : null;
+        }
+
+        function sanitize(string) {
+            try {
+                if (typeof string !== 'string') {
+                    return '';
+                }
+                let sanitized = string.trim().toLowerCase();
+                sanitized = sanitized
+                    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                    .replace(/[^a-z0-9\s-]/g, "")
+                    .replace(/\s+/g, "-")
+                    .replace(/-+/g, "-");
+                return sanitized;
+            } catch (e) {
+                return '';
+            }
+        }
+    </script>
+</body>
+
+</html>
