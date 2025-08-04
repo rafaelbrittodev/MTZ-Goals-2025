@@ -1,6 +1,6 @@
 # MTZ-Goals-2025
 Repository dedicated to the development of my technical skills as the goal of the Metricaz team.
-
+https://rafaelbrittodev.github.io/MTZ-Goals-2025/
 
 This project aims to create an ATM website focusing on the programming logic for the efficient dispensing of banknotes during withdrawals, always ensuring the minimum possible number of bills. Furthermore, a functionality to add cash to the system will be implemented. The visual presentation (aesthetics) of the website will not be considered for evaluation. Afterwards, it will be necessary to integrate a data layer for tracking clicks, interactions, and callbacks of the interface events.
 
